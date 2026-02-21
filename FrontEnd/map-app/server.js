@@ -15,9 +15,13 @@ const io = new Server(server, {
 // Armazenar usuários conectados
 const connectedUsers = new Map();
 
+app.get('/', (req, res) => {
+  res.send('Servidor online ✅');
+});
+
 io.on('connection', (socket) => {
   console.log('✅ Novo utilizador conectado:', socket.id);
-  
+
   // Enviar lista de utilizadores já conectados
   const usersList = [];
   connectedUsers.forEach((user, id) => {
@@ -28,31 +32,31 @@ io.on('connection', (socket) => {
       lastUpdate: user.lastUpdate
     });
   });
-  
+
   socket.emit('initial-users', usersList);
   console.log(`📤 Enviando lista com ${usersList.length} utilizadores`);
 
   // Registar novo utilizador
   socket.on('user-location', (userData) => {
     console.log(`📍 Localização recebida de ${socket.id}:`, userData.location);
-    
+
     const userInfo = {
       ip: userData.ip,
       location: userData.location,
       lastUpdate: new Date().toISOString()
     };
-    
+
     connectedUsers.set(socket.id, userInfo);
-    
+
     // Notificar todos os outros
     socket.broadcast.emit('user-connected', {
       id: socket.id,
       ...userInfo
     });
-    
+
     console.log(`👥 Total utilizadores: ${connectedUsers.size}`);
   });
-  
+
   // Atualizar localização
   socket.on('update-location', (location) => {
     if (connectedUsers.has(socket.id)) {
@@ -60,7 +64,7 @@ io.on('connection', (socket) => {
       user.location = location;
       user.lastUpdate = new Date().toISOString();
       connectedUsers.set(socket.id, user);
-      
+
       // Broadcast da atualização
       socket.broadcast.emit('location-updated', {
         id: socket.id,
@@ -68,7 +72,7 @@ io.on('connection', (socket) => {
       });
     }
   });
-  
+
   // Desconexão
   socket.on('disconnect', () => {
     if (connectedUsers.has(socket.id)) {
