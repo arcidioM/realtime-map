@@ -1,6 +1,7 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = 'http://localhost:3001';
+// const SOCKET_URL = 'http://localhost:3001';
+const SOCKET_URL = 'https://realtime-map-backend.onrender.com';
 let socket = null;
 
 export const initSocket = () => {
