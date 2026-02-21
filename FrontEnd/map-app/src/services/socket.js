@@ -11,7 +11,7 @@ export const initSocket = () => {
       reconnection: true,
       reconnectionAttempts: 10,            // ✅ mais tentativas
       reconnectionDelay: 2000,
-      timeout: 30000,                       // ✅ 30 segundos de timeout
+      timeout: 90000,                       // ✅ 90 segundos de timeout
     });
 
     socket.on('connect', () => {
