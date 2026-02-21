@@ -1,13 +1,14 @@
 import { Server } from 'socket.io';
 import http from 'http';
 import express from 'express';
+import https from 'https';
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"]
+    origin: '*',
+    methods: ['GET', 'POST']
   }
 });
 
@@ -83,3 +84,12 @@ const PORT = 3001;
 server.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });
+
+// ✅ Manter servidor acordado no Render (ping a cada 14 minutos)
+setInterval(() => {
+  https.get('https://realtime-map-backend.onrender.com', (res) => {
+    console.log('🔄 Keep alive:', res.statusCode);
+  }).on('error', (err) => {
+    console.error('Keep alive error:', err.message);
+  });
+}, 840000);
