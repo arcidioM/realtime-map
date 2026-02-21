@@ -1,6 +1,5 @@
 import { io } from 'socket.io-client';
 
-// const SOCKET_URL = 'http://localhost:3001';
 const SOCKET_URL = 'https://realtime-map-backend.onrender.com';
 let socket = null;
 
@@ -8,16 +7,17 @@ export const initSocket = () => {
   if (!socket) {
     console.log('🔌 Inicializando socket...');
     socket = io(SOCKET_URL, {
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'], // ✅ polling como fallback para mobile
       reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000
+      reconnectionAttempts: 10,            // ✅ mais tentativas
+      reconnectionDelay: 2000,
+      timeout: 30000,                       // ✅ 30 segundos de timeout
     });
-    
+
     socket.on('connect', () => {
       console.log('✅ Conectado ao servidor WebSocket');
     });
-    
+
     socket.on('connect_error', (error) => {
       console.error('❌ Erro na conexão WebSocket:', error);
     });
